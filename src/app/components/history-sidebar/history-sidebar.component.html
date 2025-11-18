@@ -1,0 +1,62 @@
+<aside class="history-sidebar" [class.collapsed]="isCollapsed">
+  <div class="sidebar-header">
+    <div class="header-content">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+        <polyline points="17 6 23 6 23 12"></polyline>
+      </svg>
+      <h3 *ngIf="!isCollapsed">Historial</h3>
+    </div>
+    <button (click)="toggleSidebar()" class="toggle-button" type="button">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline [attr.points]="isCollapsed ? '9 18 15 12 9 6' : '15 18 9 12 15 6'"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <div class="sidebar-content" *ngIf="!isCollapsed">
+    <div class="history-actions">
+      <button (click)="clearHistory()" class="clear-button" type="button" [disabled]="history.length === 0">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+        Limpiar Historial
+      </button>
+    </div>
+
+    <div class="history-list" *ngIf="history.length > 0; else emptyHistory">
+      <div 
+        *ngFor="let item of history" 
+        class="history-item"
+        (click)="selectItem(item)">
+        <div class="item-header">
+          <span [class]="getMethodClass(item.method)">{{ item.method }}</span>
+          <span class="item-time">{{ formatTime(item.timestamp) }}</span>
+        </div>
+        <div class="item-url" [title]="item.url">
+          {{ getShortUrl(item.url) }}
+        </div>
+        <div class="item-footer" *ngIf="item.status">
+          <span class="status-badge" [class.success]="item.status >= 200 && item.status < 300">
+            {{ item.status }}
+          </span>
+          <span class="response-time" *ngIf="item.responseTime">
+            {{ item.responseTime }}ms
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #emptyHistory>
+      <div class="empty-history">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+          <polyline points="17 6 23 6 23 12"></polyline>
+        </svg>
+        <p>Aún no hay historial</p>
+        <span>Tus solicitudes aparecerán aquí</span>
+      </div>
+    </ng-template>
+  </div>
+</aside>

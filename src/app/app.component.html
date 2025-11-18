@@ -1,0 +1,26 @@
+<div class="app-container">
+  <app-header></app-header>
+  
+  <div class="app-layout">
+    <app-history-sidebar
+      [history]="history"
+      (onSelectHistory)="loadFromHistory($event)"
+      (onClearHistory)="clearHistory()">
+    </app-history-sidebar>
+
+    <main class="main-content">
+      <div class="panels-vertical">
+        <app-request-panel 
+          #requestPanel
+          (onSendRequest)="handleResponse($event)"
+          (onRequestChange)="updateCurrentRequest($event)"
+          [isLoading]="isLoading">
+        </app-request-panel>
+        
+        <app-response-panel 
+          [response]="response">
+        </app-response-panel>
+      </div>
+    </main>
+  </div>
+</div>

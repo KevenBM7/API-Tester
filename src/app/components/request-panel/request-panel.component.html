@@ -1,0 +1,93 @@
+<div class="request-panel">
+  <div class="panel-header">
+    <h2>Request</h2>
+  </div>
+
+  <div class="panel-content">
+    <!-- URL Input -->
+    <div class="form-group">
+      <label>URL Endpoint</label>
+      <div class="url-input-group">
+        <select 
+          [(ngModel)]="selectedMethod" 
+          [class]="getMethodColor(selectedMethod)"
+          class="method-select">
+          <option *ngFor="let method of methods" [value]="method">
+            {{ method }}
+          </option>
+        </select>
+        
+        <input
+          type="text"
+          [(ngModel)]="url"
+          placeholder="https://api.example.com/endpoint"
+          class="url-input"
+        />
+      </div>
+    </div>
+
+    <!-- Headers -->
+    <div class="form-group">
+      <div class="section-header">
+        <label>Headers</label>
+        <button (click)="addHeader()" class="add-button" type="button">
+          + Add Header
+        </button>
+      </div>
+
+      <div class="headers-list">
+        <div *ngFor="let header of headers; let i = index" class="header-row">
+          <input
+            type="checkbox"
+            [(ngModel)]="header.enabled"
+            class="header-checkbox"
+          />
+          <input
+            type="text"
+            [(ngModel)]="header.key"
+            placeholder="Key"
+            class="header-input"
+          />
+          <input
+            type="text"
+            [(ngModel)]="header.value"
+            placeholder="Value"
+            class="header-input"
+          />
+          <button 
+            (click)="removeHeader(i)" 
+            class="remove-button"
+            type="button"
+            *ngIf="headers.length > 1">
+            ×
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Body Section (only for POST, PUT, PATCH) -->
+    <div class="form-group" *ngIf="showBodyInput()">
+      <label>Body (JSON)</label>
+      <textarea
+        [(ngModel)]="body"
+        placeholder='&#123;&#10;  "name": "John Doe",&#10;  "email": "john@example.com"&#10;&#125;'
+        rows="8"
+        class="body-textarea"
+      ></textarea>
+    </div>
+
+    <!-- Send Button -->
+    <button 
+      (click)="sendRequest()" 
+      [disabled]="isLoading"
+      class="send-button"
+      type="button">
+      <svg *ngIf="!isLoading" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </svg>
+      <span class="spinner" *ngIf="isLoading"></span>
+      {{ isLoading ? 'Sending...' : 'Send Request' }}
+    </button>
+  </div>
+</div>
