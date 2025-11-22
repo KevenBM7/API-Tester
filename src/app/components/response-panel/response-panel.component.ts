@@ -12,7 +12,6 @@ import { ApiResponse } from '../../interfaces/http-response';
 export class ResponsePanelComponent {
   @Input() response: ApiResponse | null = null;
 
-  // Función de flecha (buena práctica)
   formatJson = (data: any): string => {
     try {
       return JSON.stringify(data, null, 2);
@@ -21,7 +20,6 @@ export class ResponsePanelComponent {
     }
   };
 
-  // Función de flecha (buena práctica)
   copyToClipboard = (): void => {
     if (this.response) {
       const text = this.formatJson(this.response.body);
@@ -31,7 +29,6 @@ export class ResponsePanelComponent {
     }
   };
 
-  // Función de flecha (buena práctica)
   downloadResponse = (): void => {
     if (this.response) {
       const text = this.formatJson(this.response.body);
@@ -45,7 +42,6 @@ export class ResponsePanelComponent {
     }
   };
 
-  // Función de flecha (buena práctica)
   isSuccessStatus = (): boolean => {
     return this.response ? this.response.status >= 200 && this.response.status < 300 : false;
   };

@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { firstValueFrom } from 'rxjs';
 import { ApiRequest } from '../interfaces/http-request';
-import { ApiResponse } from '../interfaces/http-response'; // ✅ CORREGIDO
+import { ApiResponse } from '../interfaces/http-response';
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +13,10 @@ export class ApiRequestService {
   
   constructor(private http: HttpClient) {}
 
-  // Método principal usando firstValueFrom (buena práctica)
   async sendRequest(request: ApiRequest): Promise<ApiResponse> {
     const startTime = Date.now();
     
     try {
-      // Construir headers habilitados
       const enabledHeaders = request.headers
         .filter((header) => header.enabled && header.key.trim() !== '')
         .reduce((acc, header) => {
@@ -28,13 +26,11 @@ export class ApiRequestService {
 
       const httpHeaders = new HttpHeaders(enabledHeaders);
 
-      // Opciones de la petición
       const options = {
         headers: httpHeaders,
         observe: 'response' as const
       };
 
-      // Realizar petición según el método
       let response$: Observable<HttpResponse<any>>;
 
       switch (request.method) {
@@ -57,7 +53,6 @@ export class ApiRequestService {
           throw new Error('Método HTTP no soportado');
       }
 
-      // Usar firstValueFrom para convertir Observable a Promise (buena práctica)
       const httpResponse = await firstValueFrom(response$);
       const responseTime = Date.now() - startTime;
 

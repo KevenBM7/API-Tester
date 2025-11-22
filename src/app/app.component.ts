@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeaderComponent } from './components/header/header.component';
 import { RequestPanelComponent } from './components/request-panel/request-panel.component';
@@ -21,27 +21,18 @@ import { HttpHeader } from './interfaces/http-request';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements OnInit {
   @ViewChild('requestPanel') requestPanel!: RequestPanelComponent;
 
   response: ApiResponse | null = null;
   isLoading = false;
   history: HistoryItem[] = [];
 
-  private currentUrl = '';
-  private currentMethod: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' = 'GET';
-  private currentHeaders: HttpHeader[] = [];
-  private currentBody = '';
+  private readonly HISTORY_STORAGE_KEY = 'api-tester-history';
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
+    this.loadHistoryFromStorage();
   }
-
-  updateCurrentRequest = (data: { url: string; method: string; headers: HttpHeader[]; body: string }): void => {
-    this.currentUrl = data.url;
-    this.currentMethod = data.method as any;
-    this.currentHeaders = data.headers;
-    this.currentBody = data.body;
-  };
 
   handleResponse = async (responsePromise: Promise<ApiResponse>) => {
     this.isLoading = true;
@@ -59,10 +50,13 @@ export class AppComponent implements AfterViewInit {
   };
 
   addToHistory = (response: ApiResponse): void => {
+    const requestData = this.requestPanel.getCurrentRequestData();
     const historyItem: HistoryItem = {
       id: `${Date.now()}-${Math.random()}`,
-      url: this.currentUrl,
-      method: this.currentMethod,
+      url: requestData.url,
+      method: requestData.method as any,
+      headers: JSON.parse(JSON.stringify(requestData.headers)),
+      body: requestData.body,
       timestamp: new Date(),
       status: response.status,
       responseTime: response.responseTime
@@ -73,29 +67,42 @@ export class AppComponent implements AfterViewInit {
     if (this.history.length > 50) {
       this.history = this.history.slice(0, 50);
     }
+    this.saveHistoryToStorage();
   };
 
   loadFromHistory = (item: HistoryItem): void => {
     if (this.requestPanel) {
-      const defaultHeaders: HttpHeader[] = [
-        { key: 'Content-Type', value: 'application/json', enabled: true }
-      ];
-      
       this.requestPanel.loadRequestData(
         item.url,
         item.method,
-        defaultHeaders,
-        ''
+        item.headers,
+        item.body
       );
-
-      this.currentUrl = item.url;
-      this.currentMethod = item.method;
-      this.currentHeaders = defaultHeaders;
-      this.currentBody = '';
     }
   };
 
   clearHistory = (): void => {
     this.history = [];
+    this.saveHistoryToStorage();
   };
+
+  private saveHistoryToStorage(): void {
+    try {
+      localStorage.setItem(this.HISTORY_STORAGE_KEY, JSON.stringify(this.history));
+    } catch (e) {
+      console.error('Error saving history to localStorage', e);
+    }
+  }
+
+  private loadHistoryFromStorage(): void {
+    const storedHistory = localStorage.getItem(this.HISTORY_STORAGE_KEY);
+    if (storedHistory) {
+      // Convertir el string de la fecha de vuelta a un objeto Date
+      const parsedHistory: HistoryItem[] = JSON.parse(storedHistory); 
+      this.history = parsedHistory.map(item => ({
+        ...item,
+        timestamp: new Date(item.timestamp)
+      }));
+    }
+  }
 }

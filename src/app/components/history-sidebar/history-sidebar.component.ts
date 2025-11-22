@@ -16,29 +16,24 @@ export class HistorySidebarComponent {
 
   isCollapsed = false;
 
-  // Función de flecha (buena práctica)
   toggleSidebar = (): void => {
     this.isCollapsed = !this.isCollapsed;
   };
 
-  // Función de flecha (buena práctica)
   selectItem = (item: HistoryItem): void => {
     this.onSelectHistory.emit(item);
   };
 
-  // Función de flecha (buena práctica)
   clearHistory = (): void => {
     if (confirm('¿Estás seguro de que deseas borrar todo el historial?')) {
       this.onClearHistory.emit();
     }
   };
 
-  // Función de flecha (buena práctica)
   getMethodClass = (method: string): string => {
     return `method-badge method-${method.toLowerCase()}`;
   };
 
-  // Función de flecha (buena práctica)
   formatTime = (date: Date): string => {
     const now = new Date();
     const diff = now.getTime() - new Date(date).getTime();
@@ -52,7 +47,6 @@ export class HistorySidebarComponent {
     return 'Just now';
   };
 
-  // Función de flecha (buena práctica)
   getShortUrl = (url: string): string => {
     try {
       const urlObj = new URL(url);

@@ -14,12 +14,11 @@ import { ApiResponse } from '../../interfaces/http-response';
 })
 export class RequestPanelComponent {
   @Output() onSendRequest = new EventEmitter<Promise<ApiResponse>>();
-  @Output() onRequestChange = new EventEmitter<{ url: string; method: string; headers: HttpHeader[]; body: string }>();
   
   @Input() isLoading = false;
 
   // Propiedades del formulario
-  url = 'https://jsonplaceholder.typicode.com/users';
+  url = '';
   selectedMethod: ApiRequest['method'] = 'GET';
   body = '';
   headers: HttpHeader[] = [
@@ -30,16 +29,24 @@ export class RequestPanelComponent {
 
   constructor(private apiService: ApiRequestService) {}
 
-  // ✨ Método público para cargar datos desde el padre
+  public getCurrentRequestData() {
+    return {
+      url: this.url,
+      method: this.selectedMethod,
+      headers: this.headers,
+      body: this.body
+    };
+  }
   loadRequestData(url: string, method: ApiRequest['method'], headers?: HttpHeader[], body?: string): void {
     this.url = url;
     this.selectedMethod = method;
+
     if (headers && headers.length > 0) {
-      this.headers = [...headers];
+      this.headers = JSON.parse(JSON.stringify(headers));
+    } else {
+      this.headers = [{ key: 'Content-Type', value: 'application/json', enabled: true }];
     }
-    if (body) {
-      this.body = body;
-    }
+    this.body = body || '';
   }
 
   addHeader = (): void => {
@@ -70,14 +77,6 @@ export class RequestPanelComponent {
       alert('Por favor ingresa una URL válida');
       return;
     }
-
-    //cambios antes de enviar
-    this.onRequestChange.emit({
-      url: this.url,
-      method: this.selectedMethod,
-      headers: this.headers,
-      body: this.body
-    });
 
     const request: ApiRequest = {
       url: this.url,

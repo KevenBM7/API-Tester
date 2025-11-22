@@ -11,7 +11,8 @@
         <select 
           [(ngModel)]="selectedMethod" 
           [class]="getMethodColor(selectedMethod)"
-          class="method-select">
+          class="method-select"
+          [disabled]="isLoading">
           <option *ngFor="let method of methods" [value]="method">
             {{ method }}
           </option>
@@ -21,6 +22,7 @@
           type="text"
           [(ngModel)]="url"
           placeholder="https://api.example.com/endpoint"
+          [disabled]="isLoading"
           class="url-input"
         />
       </div>
@@ -30,7 +32,7 @@
     <div class="form-group">
       <div class="section-header">
         <label>Headers</label>
-        <button (click)="addHeader()" class="add-button" type="button">
+        <button (click)="addHeader()" class="add-button" type="button" [disabled]="isLoading">
           + Add Header
         </button>
       </div>
@@ -40,22 +42,26 @@
           <input
             type="checkbox"
             [(ngModel)]="header.enabled"
+            [disabled]="isLoading"
             class="header-checkbox"
           />
           <input
             type="text"
             [(ngModel)]="header.key"
             placeholder="Key"
+            [disabled]="isLoading"
             class="header-input"
           />
           <input
             type="text"
             [(ngModel)]="header.value"
             placeholder="Value"
+            [disabled]="isLoading"
             class="header-input"
           />
           <button 
             (click)="removeHeader(i)" 
+            [disabled]="isLoading"
             class="remove-button"
             type="button"
             *ngIf="headers.length > 1">
@@ -72,6 +78,7 @@
         [(ngModel)]="body"
         placeholder='&#123;&#10;  "name": "John Doe",&#10;  "email": "john@example.com"&#10;&#125;'
         rows="8"
+        [disabled]="isLoading"
         class="body-textarea"
       ></textarea>
     </div>
